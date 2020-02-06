@@ -16,6 +16,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -31,7 +33,6 @@ public class ProductController {
     //Récupérer la liste des produits
 
     @RequestMapping(value = "/Produits", method = RequestMethod.GET)
-
     public MappingJacksonValue listeProduits() {
 
         Iterable<Product> produits = productDao.findAll();
@@ -43,6 +44,27 @@ public class ProductController {
         MappingJacksonValue produitsFiltres = new MappingJacksonValue(produits);
 
         produitsFiltres.setFilters(listDeNosFiltres);
+
+        return produitsFiltres;
+    }
+    
+    
+    @RequestMapping(value = "/AdminProduits", method = RequestMethod.GET)
+    public MappingJacksonValue listeAdminProduits() {
+    	
+    	HashMap<Product, Integer> mapProduits = new HashMap<Product, Integer>();
+    	
+        Iterable<Product> produitsIterable = productDao.findAll();
+        
+        Iterator<Product> iterProduct = produitsIterable.iterator();
+        
+        while(iterProduct.hasNext()) {
+        	Product prdt = iterProduct.next();
+        	int marge = prdt.getPrix() - prdt.getPrixAchat();
+        	mapProduits.put(prdt, marge);
+         }
+
+        MappingJacksonValue produitsFiltres = new MappingJacksonValue(mapProduits);
 
         return produitsFiltres;
     }
